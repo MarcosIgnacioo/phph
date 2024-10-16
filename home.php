@@ -144,7 +144,6 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
       </nav>
 
       <div class="row">
-
         <?php foreach ($products as $product) : ?>
           <div class="card" style="width: 18rem">
             <img src=<?= $product->cover ?> class="card-img-top" alt="..." />
@@ -153,33 +152,10 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
               <p class="card-text">
                 <?= $product->description ?>
               </p>
-              <a href=<?= $product->slug ?> class="btn btn-primary">Ver producto</a>
+              <a href=<?= 'product-details?slug=' . $product->slug ?> class="btn btn-primary">Ver producto</a>
             </div>
           </div>
         <?php endforeach ?>
-
-        <div class="card" style="width: 18rem">
-          <img src="..." class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">
-              Some quick example text to build on the card title and make up
-              the bulk of the card's content.
-            </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-          </div>
-        </div>
-        <div class="card" style="width: 18rem">
-          <img src="..." class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">
-              Some quick example text to build on the card title and make up
-              the bulk of the card's content.
-            </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-          </div>
-        </div>
       </div>
     </div>
   </div>

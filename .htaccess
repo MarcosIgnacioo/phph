@@ -5,3 +5,5 @@ RewriteEngine on
   Header set Access-Control-Allow-Origin "*"
 </IfModule>
 RewriteRule ^auth$ app/AuthController.php
+RewriteRule ^product-details/([^/]+)/?$ product_details.php
+RewriteRule ^product-details/?$ product_details.php
