@@ -1,4 +1,5 @@
 <?php
+session_start();
 if (!$_POST || !$_POST["action"]) {
   echo 'There is no action';
   return;
@@ -8,7 +9,16 @@ switch ($_POST["action"]) {
   case 'login':
     $authController = new Auth();
     $res = $authController->login($_POST["email"], $_POST["password"]);
-    print_r($res);
+    if ($res->code != 2) {
+      header('Location: ' . 'index.php', true);
+      return 'error';
+    }
+
+    $_SESSION["api_token"] = $res->data->token;
+
+    header('Location: home.php');
+    exit();
+
     break;
 
   default:
@@ -36,6 +46,6 @@ class Auth
     $response = curl_exec($curl);
 
     curl_close($curl);
-    return $response;
+    return json_decode($response);
   }
 }

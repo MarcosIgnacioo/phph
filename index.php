@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!doctype html>
 <html lang="en">
 
@@ -25,7 +28,7 @@
         </div>
         <div class="col">
           <div class="row">
-            <form class="col d-flex flex-column" method="POST" action="Auth.php">
+            <form class="col d-flex flex-column" method="POST" action="auth">
               <img
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Flogos-world.net%2Fwp-content%2Fuploads%2F2020%2F04%2FMcDonalds-Logo.png&f=1&nofb=1&ipt=3c815ed62bc3a8e0f7a49061dd031b41932d168f0eeef0dcf6cf492ca8054bd6&ipo=images"
                 class="object-fit-cover border rounded"
