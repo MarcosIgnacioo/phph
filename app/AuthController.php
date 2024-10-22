@@ -16,7 +16,7 @@ switch ($_POST["action"]) {
 
     $_SESSION["api_token"] = $res->data->token;
 
-    header('Location: home.php');
+    header('Location: home');
     exit();
 
     break;
