@@ -143,7 +143,7 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
         </div>
       </nav>
       <div class="row m-2">
-        <button type="button" style="width: fit-content;" class="btn btn-primary fit-content ms-auto" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Agregar</button>
+        <button type="button" style="width: fit-content;" class="btn btn-primary fit-content ms-auto" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="add_product">Agregar</button>
       </div>
 
       <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -154,21 +154,46 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form>
+              <form method="POST" action="create-product">
                 <div class="mb-3">
-                  <label for="recipient-name" class="col-form-label">Recipient:</label>
-                  <input type="text" class="form-control" id="recipient-name">
+                  <label class="col-form-label">Nombre del producto</label>
+                  <input type="text" class="form-control" name="name" value="triciclo apache">
                 </div>
                 <div class="mb-3">
-                  <label for="message-text" class="col-form-label">Message:</label>
-                  <textarea class="form-control" id="message-text"></textarea>
+                  <label class="col-form-label">Descripcion del producto</label>
+                  <input type="text" class="form-control" name="description" value="es un triciclo">
+                </div>
+                <div class="mb-3">
+                  <label class="col-form-label">Slug del producto</label>
+                  <input type="text" class="form-control" name="slug" value="apache">
+                </div>
+                <div class="mb-3">
+                  <label class="col-form-label">Caracteristicas</label>
+                  <input type="text" class="form-control" name="features" value="esta bonoito">
+                </div>
+                <div class="mb-3">
+                  <label class="col-form-label">Marca</label>
+                  <input type="number" class="form-control" name="brands" value="1">
+                </div>
+                <div class="mb-3">
+                  <label class="col-form-label">Categorias</label>
+                  <input type="number" class="form-control" name="categories" value="1">
+                </div>
+                <div class="mb-3">
+                  <label class="col-form-label">Etiquetas</label>
+                  <input type="number" class="form-control" name="tags" value="1">
+                </div>
+                <div class="modal-footer">
+                  <label class="col-form-label">Imagen</label>
+                  <input type="file" class="form-control" name="cover" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <button type="submit" class="btn btn-primary">Agregar producto</button>
                 </div>
               </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Send message</button>
-            </div>
+
           </div>
         </div>
       </div>
@@ -209,9 +234,13 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
         // Update the modal's content.
         const modalTitle = exampleModal.querySelector('.modal-title')
         const modalBodyInput = exampleModal.querySelector('.modal-body input')
-
-        modalTitle.textContent = `New message to ${recipient}`
-        modalBodyInput.value = recipient
+        const modalBodyForm = exampleModal.querySelector('.modal-body form')
+        const actionInput = document.createElement('input');
+        actionInput.name = "action";
+        actionInput.value = recipient;
+        actionInput.hidden = true;
+        modalBodyForm.appendChild(actionInput)
+        // modalBodyInput.value = recipient
       })
     }
   </script>
