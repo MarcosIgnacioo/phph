@@ -1,9 +1,13 @@
 <?php
 include_once("app/ProductController.php");
+include_once("app/BrandController.php");
 session_start();
 $productController = new ProductController();
+$brandController = new BrandController();
 $products = $productController->getAllProducts($_SESSION['api_token']);
+$brands = $brandController->get();
 ?>
+
 <!doctype html>
 <html lang="en">
 
@@ -177,7 +181,13 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Marca</label>
-                  <input type="number" class="form-control product-brand" name="brand_id" value="1">
+                  <?php if (isset($brands) && sizeof($brands)): ?>
+                    <select class="form-control product-brand" name="brand_id" id="brand-selector">
+                      <?php foreach ($brands as $brand) : ?>
+                        <option value="<?= $brand->id ?>"><?= $brand->name ?></option>
+                      <?php endforeach ?>
+                    </select>
+                  <?php endif; ?>
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Categorias</label>
@@ -189,7 +199,7 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
                 </div>
                 <div class="modal-footer">
                   <label class="col-form-label">Imagen</label>
-                  <input type="file" class="form-control product-cover" name="cover" value="">
+                  <input type="file" class="form-control product-cover" name="cover" value="" required>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -245,30 +255,32 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
         reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          const myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
 
-          const graphql = JSON.stringify({
-            query: "",
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+          const body = new URLSearchParams({
             action: 'delete_product',
-            variables: {}
-          })
+            id: id,
+          });
+
           const requestOptions = {
-            method: "DELETE",
+            method: "POST",
             headers: myHeaders,
-            body: graphql,
+            body: body.toString(),
             redirect: "follow"
           };
+          fetch(`http://localhost/phph/product`, requestOptions)
+            .then(response => response.text())
+            .then(res => console.log(res))
+            .catch(error => console.log('error', error));
 
-          fetch(`https://localhost/jona/php/1/home/product/${id}`, requestOptions)
-            .then((response) => response.text())
-            .then((result) => console.log(result))
-            .catch((error) => console.error(error));
           swalWithBootstrapButtons.fire({
             title: "Deleted!",
             text: "Your file has been deleted.",
             icon: "success"
           });
+          location.reload();
         } else if (
           result.dismiss === Swal.DismissReason.cancel
         ) {

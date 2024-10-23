@@ -2,11 +2,6 @@
 
 session_start();
 
-
-if (!$_POST || !$_POST["action"]) {
-  return;
-}
-
 switch ($_POST["action"]) {
   case 'add_product':
     $productController = new ProductController();
@@ -15,18 +10,15 @@ switch ($_POST["action"]) {
     exit();
     break;
   case 'update_product':
-    print_r($_POST);
     $productController = new ProductController();
     $res = $productController->updateProduct($_POST);
     header('Location: home');
     exit();
     break;
   case 'delete_product':
-    print_r($_POST);
     $productController = new ProductController();
     $res = $productController->deleteProduct($_POST);
-    header('Location: home');
-    exit();
+    echo json_encode(array($res, $_POST));
     break;
   default:
     break;
@@ -162,7 +154,6 @@ class ProductController
     ));
 
     $response = curl_exec($curl);
-
     curl_close($curl);
     return $response;
   }
