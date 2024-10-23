@@ -211,7 +211,7 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
               </p>
               <a href=<?= 'product-details?slug=' . $product->slug ?> class="btn btn-primary">Ver producto</a>
               <button type="button" class="btn btn-warning" data-product-id=<?= $product->id ?> data-product-slug='<?= $product->slug ?>' data-product-name='<?= $product->name ?>' data-product-description='<?= $product->description ?>' data-product-features='<?= $product->features ?>' data-product-brand_id='<?= $product->brand_id ?>' data-product-cover='<?= $product->cover ?>' data-product-categories[0]='<?= 1 ?>' data-product-tags[0]='<?= 1 ?>' data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="update_product">Editar</button>
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Borrar</button>
+              <button type="button" class="btn btn-danger" onclick="deleteProduct(this)" data-id='<?= $product->id ?>'>Borrar</button>
             </div>
           </div>
         <?php endforeach ?>
@@ -223,16 +223,73 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
     crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="sweetalert2.all.min.js"></script>
   <script>
+    function deleteProduct(obj) {
+      const id = obj.dataset.id;
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          const graphql = JSON.stringify({
+            query: "",
+            action: 'delete_product',
+            variables: {}
+          })
+          const requestOptions = {
+            method: "DELETE",
+            headers: myHeaders,
+            body: graphql,
+            redirect: "follow"
+          };
+
+          fetch(`https://localhost/jona/php/1/home/product/${id}`, requestOptions)
+            .then((response) => response.text())
+            .then((result) => console.log(result))
+            .catch((error) => console.error(error));
+          swalWithBootstrapButtons.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+        } else if (
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire({
+            title: "Cancelled",
+            text: "Your imaginary file is safe :)",
+            icon: "error"
+          });
+        }
+      });
+    }
+
     const exampleModal = document.getElementById('exampleModal')
     if (exampleModal) {
       exampleModal.addEventListener('show.bs.modal', event => {
         const modalBodyForm = exampleModal.querySelector('.modal-body form')
         const button = event.relatedTarget
-        const recipient = button.getAttribute('data-bs-whatever')
+        const ACTION = button.getAttribute('data-bs-whatever')
         const actionButton = modalBodyForm.querySelector('#submit-btn');
         const title = document.getElementById('modalHeader');
-        switch (recipient) {
+        switch (ACTION) {
           case 'update_product':
             console.log(button.dataset);
             const data = {};
@@ -255,6 +312,8 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
             actionButton.innerText = "Guardar";
             title.innerText = "Editar producto"
             break;
+          case 'delete_product':
+            break;
           default:
             title.innerText = "Agregar producto"
             break;
@@ -263,7 +322,7 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
         const actionInput = document.createElement('input');
         actionInput.name = "action";
         actionInput.hidden = true;
-        actionInput.value = recipient;
+        actionInput.value = ACTION;
         modalBodyForm.append(actionInput);
       })
     }
