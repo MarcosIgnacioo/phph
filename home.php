@@ -154,7 +154,7 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form method="POST" action="create-product">
+              <form method="POST" action="create-product" enctype="multipart/form-data">
                 <div class="mb-3">
                   <label class="col-form-label">Nombre del producto</label>
                   <input type="text" class="form-control" name="name" value="triciclo apache">
@@ -173,15 +173,15 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Marca</label>
-                  <input type="number" class="form-control" name="brands" value="1">
+                  <input type="number" class="form-control" name="brand_id" value="1">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Categorias</label>
-                  <input type="number" class="form-control" name="categories" value="1">
+                  <input type="number" class="form-control" name="categories[0]" value="1">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Etiquetas</label>
-                  <input type="number" class="form-control" name="tags" value="1">
+                  <input type="number" class="form-control" name="tags[0]" value="1">
                 </div>
                 <div class="modal-footer">
                   <label class="col-form-label">Imagen</label>
@@ -193,7 +193,6 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
                 </div>
               </form>
             </div>
-
           </div>
         </div>
       </div>

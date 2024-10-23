@@ -4,19 +4,14 @@ session_start();
 
 
 if (!$_POST || !$_POST["action"]) {
-  echo 'There is no action';
   return;
 }
 
 switch ($_POST["action"]) {
   case 'add_product':
     $productController = new ProductController();
-    // print_r($_POST);
-    // break;
     $res = $productController->createProduct($_POST);
-    print_r($res);
     break;
-
   default:
     break;
 }
@@ -70,30 +65,41 @@ class ProductController
     curl_close($curl);
     return json_decode($response)->data;
   }
+
   function createProduct($product)
   {
-    $curl = curl_init();
-    $product['cover'] =  new CURLFILE($product['cover']);
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://crud.jonathansoto.mx/api/products',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => $product,
-      CURLOPT_HTTPHEADER => array(
-        'Authorization: Bearer ' . $_SESSION['api_token']
-      ),
-    ));
+    $uploadDir = '/opt/lampp/temp/';
+    $uploadFile = $uploadDir . basename($_FILES['cover']['name']);
+    print_r($_FILES['cover']['tmp_name']);
 
+    if (move_uploaded_file($_FILES['cover']['tmp_name'], $uploadFile)) {
+      $product['cover'] = new CURLFILE(realpath($uploadFile));
 
-    $response = curl_exec($curl);
+      $curl = curl_init();
 
-    curl_close($curl);
-    return ($response);
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://crud.jonathansoto.mx/api/products',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $product,
+        CURLOPT_HTTPHEADER => array(
+          'Authorization: Bearer ' . $_SESSION['api_token'],
+          'Cookie: XSRF-TOKEN=eyJpdiI6ImwxeTlKUFdhenRzSWdGc2ZmUnlFdXc9PSIsInZhbHVlIjoibnROeEFsK3Q4YmR3YjZNMlFzZEJaSEErWDFGM1luRE9FY3JmVVBoMHpVVkFKUjMvNVU5QXhoKzRwYlQydHczdkNzZUNhc3FoQXJaZFFna3JPaEtmdFh0Y0ZQYlBCcHJZODVIeUtzeTd4YVpxQko5YWdNUzlGblhiblE4OXh6KzIiLCJtYWMiOiI3NGEzODgyMDg0N2YxOTBlZDc2NzljMjVkNmViMGQzODk3ODUwYTBiNDQ2NjU4Zjk2OTBjNmQwYzQxY2E0ZTc4IiwidGFnIjoiIn0%3D; apicrud_session=eyJpdiI6IkFvUm0rNkZRTnRtRk5lbkFyU1R5ZXc9PSIsInZhbHVlIjoiRkEyS3BDSWhjMG1SbVdQRmZsbVh4LzlhOVJQTlRZVUJjdm1pbGJPMHJxcGl5My9mZUlHcm1pSE4rWjd3ZllZRFVaczNaOUtMSCtUbDNKaVNoYTk5VFduNmhvV0JxbEQvVy9URGMyNUN4UDZvNlhrYnZWMXJiTVZKRFZzTm9LZVUiLCJtYWMiOiIwODdiMGYzZmM3ZjllM2ZhNDU5MzVjNmRlOTcyZjVlMmRiZTBiNWYzMjZiZjI4OTVkZWEyYjdhNGYyNDE0ZDE3IiwidGFnIjoiIn0%3D'
+        ),
+      ));
+
+      $response = curl_exec($curl);
+
+      curl_close($curl);
+
+      return json_decode($response);
+    } else {
+      return ['error' => 'Error al mover el archivo subido.'];
+    }
   }
 }
-// array('name' => 'playear azul', 'slug' => 'playera-azul-21-forever-312-7', 'description' => 'hermosa playera de color azul de la marca 21 forever', 'features' => 'La lavadora cuenta con capacidad de lavado de 18 kg, diseño exterior de color gris, su funcionamiento integra tecnología air bubble 4d, sistema de lavado por pulsador, 5 ciclos de lavado mas ciclo ariel , tina de acero inoxidable, 9 niveles de agua y 3 niveles de temperatura. Ofrece llenado con cascada de agua waterrfall, timer para inicio retardado y manija de apertura ez soft', 'brand_id' => '1', 'cover' => new CURLFILE('/Users/jonathansoto/Downloads/128703.png'), 'categories[0]' => '3', 'categories[1]' => '4', 'tags[0]' => '3', 'tags[1]' => '4')
