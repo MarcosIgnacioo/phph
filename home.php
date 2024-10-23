@@ -164,10 +164,6 @@ $brands = $brandController->get();
                   <input type="text" class="form-control product-name" name="name" value="triciclo apache">
                 </div>
                 <div class="mb-3">
-                  <label class="col-form-label">Descripcion del producto</label>
-                  <input type="text" class="form-control product-details" name="description" value="es un triciclo">
-                </div>
-                <div class="mb-3">
                   <label class="col-form-label">Slug del producto</label>
                   <input type="text" class="form-control product-slug" name="slug" value="apache">
                 </div>
@@ -220,7 +216,7 @@ $brands = $brandController->get();
                 <?= $product->description ?>
               </p>
               <a href=<?= 'product-details?slug=' . $product->slug ?> class="btn btn-primary">Ver producto</a>
-              <button type="button" class="btn btn-warning" data-product-id=<?= $product->id ?> data-product-slug='<?= $product->slug ?>' data-product-name='<?= $product->name ?>' data-product-description='<?= $product->description ?>' data-product-features='<?= $product->features ?>' data-product-brand_id='<?= $product->brand_id ?>' data-product-cover='<?= $product->cover ?>' data-product-categories[0]='<?= 1 ?>' data-product-tags[0]='<?= 1 ?>' data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="update_product">Editar</button>
+              <button type="button" class="btn btn-warning" data-product='<?= json_encode($product) ?>' data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="update_product">Editar</button>
               <button type="button" class="btn btn-danger" onclick="deleteProduct(this)" data-id='<?= $product->id ?>'>Borrar</button>
             </div>
           </div>
@@ -303,24 +299,23 @@ $brands = $brandController->get();
         const title = document.getElementById('modalHeader');
         switch (ACTION) {
           case 'update_product':
-            console.log(button.dataset);
-            const data = {};
-            for (const key in button.dataset) {
-              if (key.startsWith('product')) {
-                const field = key.replace('product', '').toLowerCase()
-                data[field] = button.dataset[key];
-              }
-            }
+            const data = JSON.parse(button.dataset['product']);
+            const brandsComboBox = modalBodyForm.querySelector('select')
+            brandsComboBox.selectedIndex = data['brand_id'] - 1;
+            console.log(data)
 
             const idInput = document.createElement('input');
             idInput.name = "id";
             idInput.hidden = true;
             modalBodyForm.prepend(idInput)
+
             const inputs = modalBodyForm.querySelectorAll('input')
-            console.log()
-            for (let i = 0; i < Object.keys(data).length; i++) {
+            console.log(data['categories[0]'] || 'asdf')
+
+            for (let i = 0; i < inputs.length - 1; i++) {
               inputs[i].value = data[inputs[i].name];
             }
+
             actionButton.innerText = "Guardar";
             title.innerText = "Editar producto"
             break;
