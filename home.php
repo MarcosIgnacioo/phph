@@ -150,46 +150,50 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">New message</h1>
+              <h1 class="modal-title fs-5" id="modalHeader">Title</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form method="POST" action="create-product" enctype="multipart/form-data">
+              <form method="POST" action="product" enctype="multipart/form-data">
                 <div class="mb-3">
                   <label class="col-form-label">Nombre del producto</label>
-                  <input type="text" class="form-control" name="name" value="triciclo apache">
+                  <input type="text" class="form-control product-name" name="name" value="triciclo apache">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Descripcion del producto</label>
-                  <input type="text" class="form-control" name="description" value="es un triciclo">
+                  <input type="text" class="form-control product-details" name="description" value="es un triciclo">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Slug del producto</label>
-                  <input type="text" class="form-control" name="slug" value="apache">
+                  <input type="text" class="form-control product-slug" name="slug" value="apache">
+                </div>
+                <div class="mb-3">
+                  <label class="col-form-label">Descripcion</label>
+                  <input type="text" class="form-control product-description" name="description" value="esta bonoito">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Caracteristicas</label>
-                  <input type="text" class="form-control" name="features" value="esta bonoito">
+                  <input type="text" class="form-control product-features" name="features" value="esta bonoito">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Marca</label>
-                  <input type="number" class="form-control" name="brand_id" value="1">
+                  <input type="number" class="form-control product-brand" name="brand_id" value="1">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Categorias</label>
-                  <input type="number" class="form-control" name="categories[0]" value="1">
+                  <input type="number" class="form-control product-category" name="categories[0]" value="1">
                 </div>
                 <div class="mb-3">
                   <label class="col-form-label">Etiquetas</label>
-                  <input type="number" class="form-control" name="tags[0]" value="1">
+                  <input type="number" class="form-control product-tags" name="tags[0]" value="1">
                 </div>
                 <div class="modal-footer">
                   <label class="col-form-label">Imagen</label>
-                  <input type="file" class="form-control" name="cover" value="">
+                  <input type="file" class="form-control product-cover" name="cover" value="">
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                  <button type="submit" class="btn btn-primary">Agregar producto</button>
+                  <button type="submit" id="submit-btn" class="btn btn-primary">Agregar producto</button>
                 </div>
               </form>
             </div>
@@ -206,7 +210,7 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
                 <?= $product->description ?>
               </p>
               <a href=<?= 'product-details?slug=' . $product->slug ?> class="btn btn-primary">Ver producto</a>
-              <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Editar</button>
+              <button type="button" class="btn btn-warning" data-product-id=<?= $product->id ?> data-product-slug='<?= $product->slug ?>' data-product-name='<?= $product->name ?>' data-product-description='<?= $product->description ?>' data-product-features='<?= $product->features ?>' data-product-brand_id='<?= $product->brand_id ?>' data-product-cover='<?= $product->cover ?>' data-product-categories[0]='<?= 1 ?>' data-product-tags[0]='<?= 1 ?>' data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="update_product">Editar</button>
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@fat">Borrar</button>
             </div>
           </div>
@@ -223,23 +227,44 @@ $products = $productController->getAllProducts($_SESSION['api_token']);
     const exampleModal = document.getElementById('exampleModal')
     if (exampleModal) {
       exampleModal.addEventListener('show.bs.modal', event => {
-        // Button that triggered the modal
-        const button = event.relatedTarget
-        // Extract info from data-bs-* attributes
-        const recipient = button.getAttribute('data-bs-whatever')
-        // If necessary, you could initiate an Ajax request here
-        // and then do the updating in a callback.
-
-        // Update the modal's content.
-        const modalTitle = exampleModal.querySelector('.modal-title')
-        const modalBodyInput = exampleModal.querySelector('.modal-body input')
         const modalBodyForm = exampleModal.querySelector('.modal-body form')
+        const button = event.relatedTarget
+        const recipient = button.getAttribute('data-bs-whatever')
+        const actionButton = modalBodyForm.querySelector('#submit-btn');
+        const title = document.getElementById('modalHeader');
+        switch (recipient) {
+          case 'update_product':
+            console.log(button.dataset);
+            const data = {};
+            for (const key in button.dataset) {
+              if (key.startsWith('product')) {
+                const field = key.replace('product', '').toLowerCase()
+                data[field] = button.dataset[key];
+              }
+            }
+
+            const idInput = document.createElement('input');
+            idInput.name = "id";
+            idInput.hidden = true;
+            modalBodyForm.prepend(idInput)
+            const inputs = modalBodyForm.querySelectorAll('input')
+            console.log()
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              inputs[i].value = data[inputs[i].name];
+            }
+            actionButton.innerText = "Guardar";
+            title.innerText = "Editar producto"
+            break;
+          default:
+            title.innerText = "Agregar producto"
+            break;
+        }
+
         const actionInput = document.createElement('input');
         actionInput.name = "action";
-        actionInput.value = recipient;
         actionInput.hidden = true;
-        modalBodyForm.appendChild(actionInput)
-        // modalBodyInput.value = recipient
+        actionInput.value = recipient;
+        modalBodyForm.append(actionInput);
       })
     }
   </script>
