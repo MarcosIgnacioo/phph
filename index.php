@@ -34,6 +34,7 @@ session_start();
                 class="object-fit-cover border rounded"
                 style="width: 20%" />
               <label for="">Email</label>
+              <input type="text" name="global_token" value=<?= $_SESSION['api_token'] ?> hidden>
               <input
                 name="email"
                 type="email"

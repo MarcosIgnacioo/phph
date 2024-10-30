@@ -159,6 +159,7 @@ $brands = $brandController->get();
             </div>
             <div class="modal-body">
               <form method="POST" action="product" enctype="multipart/form-data">
+                <input type="text" name="global_token" value=<?= $_SESSION['api_token'] ?> hidden>
                 <div class="mb-3">
                   <label class="col-form-label">Nombre del producto</label>
                   <input type="text" class="form-control product-name" name="name" value="triciclo apache">
@@ -232,6 +233,8 @@ $brands = $brandController->get();
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="sweetalert2.all.min.js"></script>
   <script>
+    const global_token = <?= $_SESSION['api_token'] ?>
+
     function deleteProduct(obj) {
       const id = obj.dataset.id;
       const swalWithBootstrapButtons = Swal.mixin({

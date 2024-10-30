@@ -1,6 +1,9 @@
 <?php
 session_start();
-if (!$_POST || !$_POST["action"]) {
+if (
+  !$_POST || !$_POST["action"] || !$_POST["global_token"]
+  || ($_SESSION["api_token"] != $_POST['global_token'])
+) {
   echo 'There is no action';
   return;
 }
